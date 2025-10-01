@@ -1,0 +1,61 @@
+import &#39;package:flutter/material.dart&#39;;
+void main() =&gt; runApp(MaterialApp(home: CoffeeForm()));
+class CoffeeForm extends StatefulWidget {
+@override
+_CoffeeFormState createState() =&gt; _CoffeeFormState();
+}
+class _CoffeeFormState extends State&lt;CoffeeForm&gt; {
+final _formKey = GlobalKey&lt;FormState&gt;();
+String name = &#39;&#39;, type = &#39;Latte&#39;, size = &#39;Medium&#39;;
+@override
+Widget build(BuildContext context) {
+return Scaffold(
+appBar: AppBar(title: Text(&#39;Order Coffee&#39;)),
+body: Padding(
+padding: EdgeInsets.all(16),
+child: Form(
+key: _formKey,
+child: Column(children: [
+TextFormField(
+decoration: InputDecoration(labelText: &#39;Name&#39;),
+validator: (v) =&gt; v == null || v.isEmpty ? &#39;Enter name&#39; : null,
+onSaved: (v) =&gt; name = v ?? &#39;&#39;,
+),
+DropdownButtonFormField(
+value: type,
+items: [&#39;Latte&#39;, &#39;Espresso&#39;, &#39;Cappuccino&#39;]
+.map((t) =&gt; DropdownMenuItem(value: t, child: Text(t)))
+.toList(),
+onChanged: (v) =&gt; type = v!,
+decoration: InputDecoration(labelText: &#39;Type&#39;),
+),
+
+DropdownButtonFormField(
+value: size,
+items: [&#39;Small&#39;, &#39;Medium&#39;, &#39;Large&#39;]
+.map((s) =&gt; DropdownMenuItem(value: s, child: Text(s)))
+.toList(),
+onChanged: (v) =&gt; size = v!,
+decoration: InputDecoration(labelText: &#39;Size&#39;),
+),
+SizedBox(height: 16),
+ElevatedButton(
+child: Text(&#39;Submit&#39;),
+onPressed: () {
+if (_formKey.currentState!.validate()) {
+_formKey.currentState!.save();
+showDialog(
+context: context,
+builder: (_) =&gt; AlertDialog(
+content: Text(&#39;Order: $size $type for $name&#39;),
+),
+);
+}
+},
+)
+]),
+),
+),
+);
+}
+}
