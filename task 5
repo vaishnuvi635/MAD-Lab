@@ -1,0 +1,64 @@
+import 'package:flutter/material.dart';
+
+void main() => runApp(MyApp());
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Simple Flutter Layout',
+      home: Scaffold(
+        appBar: AppBar(
+          title: Text('Simple Layout'),
+          centerTitle: true,
+        ),
+        body: Column(
+          children: [
+            Container(
+              width: double.infinity,
+              color: Colors.blue,
+              padding: EdgeInsets.all(16),
+              child: Text(
+                'Header',
+                style: TextStyle(color: Colors.white, fontSize: 24),
+                textAlign: TextAlign.center,
+              ),
+            ),
+            Expanded(
+              child: Row(
+                children: [
+                  Container(
+                    width: 100,
+                    color: Colors.grey[300],
+                    child: Center(child: Text('Sidebar')),
+                  ),
+                  Expanded(
+                    child: Container(
+                      color: Colors.grey[200],
+                      child: Center(
+                        child: Text(
+                          'Main Content',
+                          style: TextStyle(fontSize: 18),
+                        ),
+                      ),
+                    ),
+                  )
+                ],
+              ),
+            ),
+            Container(
+              width: double.infinity,
+              color: Colors.blue,
+              padding: EdgeInsets.all(16),
+              child: Text(
+                'Footer',
+                style: TextStyle(color: Colors.white, fontSize: 20),
+                textAlign: TextAlign.center,
+              ),
+            )
+          ],
+        ),
+      ),
+    );
+  }
+}
