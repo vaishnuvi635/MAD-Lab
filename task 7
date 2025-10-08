@@ -1,0 +1,80 @@
+import &#39;package:flutter/material.dart&#39;;
+
+void main() {
+runApp(MyApp());
+}
+
+class MyApp extends StatelessWidget {
+@override
+Widget build(BuildContext context) {
+return MaterialApp(
+title: &#39;Flutter Navigation &amp; Gestures&#39;,
+initialRoute: &#39;/&#39;,
+onGenerateRoute: (settings) {
+switch (settings.name) {
+case &#39;/&#39;:
+return MaterialPageRoute(builder: (_) =&gt; HomeScreen());
+case &#39;/second&#39;:
+return MaterialPageRoute(builder: (_) =&gt; SecondScreen());
+default:
+return MaterialPageRoute(builder: (_) =&gt; UnknownScreen());
+}
+},
+
+);
+}
+}
+
+class HomeScreen extends StatelessWidget {
+@override
+Widget build(BuildContext context) {
+return Scaffold(
+appBar: AppBar(title: Text(&#39;Home Screen&#39;)),
+body: Center(
+child: GestureDetector(
+onTap: () {
+Navigator.pushNamed(context, &#39;/second&#39;);
+},
+child: Container(
+padding: EdgeInsets.all(20),
+color: Colors.blue,
+child: Text(
+&#39;Tap to go to Second Screen&#39;,
+style: TextStyle(color: Colors.white),
+),
+),
+),
+),
+);
+}
+}
+
+class SecondScreen extends StatelessWidget {
+@override
+Widget build(BuildContext context) {
+return GestureDetector(
+// Swipe right to go back
+onHorizontalDragEnd: (details) {
+if (details.primaryVelocity! &gt; 0) {
+Navigator.pop(context);
+}
+},
+child: Scaffold(
+appBar: AppBar(title: Text(&#39;Second Screen&#39;)),
+body: Center(
+child: Text(&#39;Swipe right to go back&#39;),
+),
+),
+);
+}
+}
+
+class UnknownScreen extends StatelessWidget {
+@override
+Widget build(BuildContext context) {
+return Scaffold(
+body: Center(child: Text(&#39;Unknown Route&#39;)),
+);
+
+}
+}
