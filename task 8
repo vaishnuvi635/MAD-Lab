@@ -1,0 +1,202 @@
+File 1 (lib/main.dart):
+import &#39;package:flutter/material.dart&#39;;
+import &#39;models/note.dart&#39;;
+import &#39;services/storage_service.dart&#39;;
+void main() =&gt; runApp(const MyApp());
+class MyApp extends StatelessWidget {
+const MyApp({super.key});
+@override
+Widget build(BuildContext context) {
+return MaterialApp(
+debugShowCheckedModeBanner: false,
+title: &#39;Persistent Notes&#39;,
+theme: ThemeData(
+primarySwatch: Colors.amber,
+useMaterial3: true,
+),
+home: const NotesScreen(),
+);
+}
+}
+
+class NotesScreen extends StatefulWidget {
+const NotesScreen({super.key});
+
+@override
+State&lt;NotesScreen&gt; createState() =&gt; _NotesScreenState();
+}
+
+class _NotesScreenState extends State&lt;NotesScreen&gt; {
+
+final _titleController = TextEditingController();
+final _contentController = TextEditingController();
+List&lt;Note&gt; _notes = [];
+bool _isLoading = true;
+
+@override
+void initState() {
+super.initState();
+_loadNotes();
+}
+
+Future&lt;void&gt; _loadNotes() async {
+setState(() { _isLoading = true; });
+_notes = await StorageService.loadNotes();
+setState(() { _isLoading = false; });
+}
+Future&lt;void&gt; _addNote() async {
+if (_titleController.text.isNotEmpty &amp;&amp; _contentController.text.isNotEmpty) {
+final newNote = Note(
+title: _titleController.text,
+content: _contentController.text,
+);
+setState(() {
+_notes.add(newNote);
+});
+await StorageService.saveNotes(_notes);
+_titleController.clear();
+_contentController.clear();
+FocusScope.of(context).unfocus(); // Dismiss keyboard
+
+}
+}
+Future&lt;void&gt; _deleteNote(int index) async {
+setState(() {
+_notes.removeAt(index);
+});
+await StorageService.saveNotes(_notes);
+}
+@override
+Widget build(BuildContext context) {
+return Scaffold(
+appBar: AppBar(
+title: const Text(&#39;Personal Notes&#39;),
+),
+body: _isLoading
+? const Center(child: CircularProgressIndicator())
+: Column(
+children: [
+_buildInputArea(),
+const Divider(),
+_buildNotesList(),
+],
+),
+);
+}
+
+Widget _buildInputArea() {
+return Padding(
+padding: const EdgeInsets.all(16.0),
+
+child: Column(
+children: [
+TextField(
+controller: _titleController,
+decoration: const InputDecoration(labelText: &#39;Title&#39;, border: OutlineInputBorder()),
+),
+const SizedBox(height: 10),
+TextField(
+controller: _contentController,
+decoration: const InputDecoration(labelText: &#39;Content&#39;, border: OutlineInputBorder()),
+),
+const SizedBox(height: 10),
+ElevatedButton.icon(
+onPressed: _addNote,
+icon: const Icon(Icons.add),
+label: const Text(&#39;Add Note&#39;),
+),
+],
+),
+);
+}
+
+Widget _buildNotesList() {
+if (_notes.isEmpty) {
+return const Expanded(
+child: Center(
+child: Text(&#39;No notes yet. Add one!&#39;),
+),
+);
+
+}
+return Expanded(
+child: ListView.builder(
+itemCount: _notes.length,
+itemBuilder: (context, index) {
+final note = _notes[index];
+return Card(
+margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+child: ListTile(
+title: Text(note.title, style: const TextStyle(fontWeight: FontWeight.bold)),
+subtitle: Text(note.content),
+trailing: IconButton(
+icon: const Icon(Icons.delete_outline, color: Colors.red),
+onPressed: () =&gt; _deleteNote(index),
+),
+),
+);
+},
+),
+);
+}
+}
+
+File 2 (lib/models/note.dart):
+// Data model for a single note.
+class Note {
+final String title;
+final String content;
+
+Note({required this.title, required this.content});
+
+// Converts a Note instance to a JSON map.
+Map&lt;String, dynamic&gt; toJson() {
+return {
+&#39;title&#39;: title,
+&#39;content&#39;: content,
+};
+}
+
+// Creates a Note instance from a JSON map.
+factory Note.fromJson(Map&lt;String, dynamic&gt; json) {
+return Note(
+title: json[&#39;title&#39;] ?? &#39;&#39;,
+content: json[&#39;content&#39;] ?? &#39;&#39;,
+);
+}
+}
+
+File 3 (lib/services/storage_service.dart):
+import &#39;dart:convert&#39;;
+import &#39;package:shared_preferences/shared_preferences.dart&#39;;
+import &#39;../models/note.dart&#39;;
+
+class StorageService {
+static const String _notesKey = &#39;notes_list&#39;;
+
+// Save a list of notes to local storage.
+static Future&lt;void&gt; saveNotes(List&lt;Note&gt; notes) async {
+final prefs = await SharedPreferences.getInstance();
+
+// Convert List&lt;Note&gt; to List&lt;Map&lt;String, dynamic&gt;&gt;
+List&lt;Map&lt;String, dynamic&gt;&gt; notesJson = notes.map((note) =&gt; note.toJson()).toList();
+// Encode the list of maps into a single JSON string.
+String notesString = json.encode(notesJson);
+await prefs.setString(_notesKey, notesString);
+}
+
+// Load a list of notes from local storage.
+static Future&lt;List&lt;Note&gt;&gt; loadNotes() async {
+final prefs = await SharedPreferences.getInstance();
+String? notesString = prefs.getString(_notesKey);
+
+if (notesString != null) {
+// Decode the JSON string into a List&lt;dynamic&gt;.
+List&lt;dynamic&gt; notesJson = json.decode(notesString);
+// Map the List&lt;dynamic&gt; to a List&lt;Note&gt;.
+return notesJson.map((json) =&gt; Note.fromJson(json)).toList();
+}
+// Return an empty list if no data is found.
+return [];
+}
+}
