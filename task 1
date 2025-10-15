@@ -1,0 +1,60 @@
+How to Install and Configure Flutter Environment
+1. System Requirements
+ Windows: Windows 10 or later (64-bit)
+ macOS: macOS (64-bit)
+ Linux: Any recent 64-bit distro
+
+2. Download Flutter SDK
+ Go to the official Flutter site:
+https://flutter.dev/docs/get-started/install
+ Choose your OS (Windows/macOS/Linux)
+ Download the latest stable Flutter SDK zip/archive.
+
+3. Extract Flutter SDK
+ Extract the downloaded archive to a suitable location:
+o Windows: C:\src\flutter
+o macOS/Linux: ~/development/flutter
+
+4. Update PATH Environment Variable
+You need to add Flutter’s bin directory to your system PATH.
+ Windows:
+1. Search for Environment Variables and open Edit the system environment variables.
+2. Click Environment Variables.
+3. Under System variables, find and select Path, then click Edit.
+4. Click New and add the path to flutter\bin (e.g., C:\src\flutter\bin).
+5. Click OK to save.
+
+ macOS/Linux:
+Open terminal and run:
+export PATH=&quot;$PATH:`pwd`/flutter/bin&quot;
+Or add the line below to your shell config file (~/.bashrc, ~/.zshrc, etc.):
+export PATH=&quot;$PATH:[PATH_TO_FLUTTER_DIRECTORY]/flutter/bin&quot;
+
+5. Verify Flutter Installation
+Open a new terminal/command prompt and run:
+flutter --version
+You should see Flutter version info printed.
+
+6. Run Flutter Doctor
+Run this command to check your setup and see what else needs to be installed:
+flutter doctor
+This checks for:
+ Dart SDK (bundled with Flutter)
+ Android toolchain (Android SDK, platform tools)
+ Xcode (macOS, for iOS development)
+ Connected devices or emulators
+ IDE plugins (VS Code, Android Studio)
+Follow the instructions flutter doctor gives to fix any missing dependencies.
+
+7. Set Up Android Studio (for Android Development)
+ Download and install Android Studio: https://developer.android.com/studio
+ In Android Studio, install Android SDK and emulator via SDK Manager.
+ Add Android SDK platform tools to PATH if needed.
+ Create and run an Android emulator or connect a physical device with USB debugging
+enabled.
+
+8. Set Up VS Code or Android Studio IDE
+ Install Flutter and Dart plugins in your preferred IDE.
+
+ Open your Flutter project folder.
+ You are ready to build and run Flutter apps!
